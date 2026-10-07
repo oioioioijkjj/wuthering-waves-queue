@@ -1,0 +1,3011 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Wuthering Waves - ระบบคิว</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: #0b0f19;
+      color: #e2e8f0;
+    }
+
+    .glass-card {
+      background: rgba(30, 41, 59, 0.72);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .checkbox-tag input:checked + span {
+      background:#f59e0b1a;
+      border-color:#f59e0b;
+      color:#fbbf24;
+    }
+
+    .modal-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 999px;
+    }
+
+  </style>
+
+</head>
+
+
+<body class="min-h-screen pb-12">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header
+  class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-30 backdrop-blur-md py-4"
+>
+
+  <div
+    class="max-w-5xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4"
+  >
+
+    <div class="flex items-center gap-4">
+
+      <img
+        id="logoImg"
+        src="https://lh3.googleusercontent.com/d/1raIm7WCG49fJ-bpmGms7euwLgw6Scswj"
+        class="w-16 h-16 rounded-xl object-cover"
+        alt="logo"
+      >
+
+      <div>
+
+        <h1
+          class="text-2xl md:text-3xl font-extrabold text-amber-400"
+        >
+          Wuthering Waves Queue
+        </h1>
+
+        <p class="text-sm md:text-base text-slate-200">
+          รับลง End Game by MCW
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT BUTTONS -->
+
+    <div class="flex items-center gap-2">
+
+      <button
+        id="btnReservationTop"
+        onclick="switchTab('จอง')"
+        class="bg-violet-500 hover:bg-violet-600 text-white font-extrabold px-4 py-3 rounded-xl text-sm"
+      >
+        📋 จอง
+      </button>
+
+
+      <button
+        id="btnOpenModal"
+        onclick="openQueueModal()"
+        class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-5 py-3 rounded-xl text-sm"
+      >
+        ลงคิวได้เลยครับ
+      </button>
+
+
+      <button
+        onclick="openAdminLogin()"
+        class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-3 rounded-xl text-sm"
+      >
+        ⚙️
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="max-w-5xl mx-auto px-4 mt-6">
+
+
+  <!-- CLOSED -->
+
+  <div
+    id="closedBanner"
+    class="hidden mb-6 bg-gradient-to-r from-rose-950/80 to-slate-900 border border-rose-600/40 rounded-2xl p-4 text-center"
+  >
+
+    <div class="text-rose-300 font-bold text-lg">
+      ⛔ ร้านปิดรับคิวชั่วคราว
+    </div>
+
+    <div class="text-rose-400/70 text-sm mt-1">
+      กรุณารอประกาศเปิดรับคิวอีกครั้ง
+    </div>
+
+  </div>
+
+
+  <!-- PLAYING -->
+
+  <div
+    id="playingBanner"
+    class="hidden mb-6 bg-gradient-to-r from-cyan-950/80 to-slate-900 border border-cyan-500/40 rounded-2xl p-4"
+  >
+
+    <div class="flex items-center gap-2 text-cyan-400 font-semibold text-xs mb-1">
+
+      <span class="animate-pulse h-2 w-2 rounded-full bg-cyan-400"></span>
+
+      กำลังเล่นอยู่ ณ ตอนนี้
+
+    </div>
+
+    <div
+      id="playingContent"
+      class="text-lg font-bold text-white flex flex-wrap items-center gap-3"
+    ></div>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    id="errorBanner"
+    class="hidden mb-6 bg-rose-950/60 border border-rose-700/50 text-rose-300 rounded-xl p-4 text-sm"
+  ></div>
+
+
+  <!-- =====================================================
+       TABS
+  ====================================================== -->
+
+  <div class="flex border-b border-slate-800 mb-6 overflow-x-auto">
+
+    <button
+      id="tabQueue"
+      onclick="switchTab('คิว')"
+      class="tab-button"
+    >
+      คิว
+    </button>
+
+    <button
+      id="tabReservation"
+      onclick="switchTab('จอง')"
+      class="tab-button"
+    >
+      จอง
+    </button>
+
+    <button
+      id="tabDone"
+      onclick="switchTab('เล่นแล้ว')"
+      class="tab-button"
+    >
+      เล่นแล้ว
+    </button>
+
+    <button
+      id="tabFailed"
+      onclick="switchTab('บิด')"
+      class="tab-button"
+    >
+      บิด
+    </button>
+
+  </div>
+
+
+  <!-- CONTENT -->
+
+  <div
+    id="queueGrid"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+  ></div>
+
+</main>
+
+
+
+<!-- =====================================================
+     NORMAL QUEUE MODAL
+===================================================== -->
+
+<div
+  id="queueModal"
+  class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+>
+
+  <div
+    class="glass-card bg-slate-900 w-full max-w-md rounded-2xl p-6 border border-slate-700 max-h-[90vh] overflow-y-auto modal-scroll"
+  >
+
+    <div class="flex justify-between items-center mb-5">
+
+      <h3 class="text-xl font-bold text-amber-400">
+        ลงคิวได้เลยครับ
+      </h3>
+
+      <button
+        onclick="closeQueueModal()"
+        class="text-slate-400"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <form
+      id="queueForm"
+      onsubmit="submitQueue(event)"
+      class="space-y-4"
+    >
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          ชื่อ *
+        </label>
+
+        <input
+          id="queueName"
+          type="text"
+          required
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-2">
+          โหมด Endgame
+        </label>
+
+        <div class="grid grid-cols-2 gap-2">
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="เรือ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              เรือ
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="หอ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              หอ
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="เมทริกซ์"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              เมทริกซ์
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="โฮโล"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              โฮโล
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="ไกด์ไอดี"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              ไกด์ไอดี
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="queueEndgame"
+              value="อื่นๆ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              อื่นๆ
+            </span>
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          Discord
+        </label>
+
+        <input
+          id="queueDiscord"
+          type="text"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          หมายเหตุ
+        </label>
+
+        <textarea
+          id="queueNote"
+          rows="3"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        ></textarea>
+
+      </div>
+
+
+      <button
+        id="queueSubmitButton"
+        type="submit"
+        class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl"
+      >
+        ยืนยันลงคิว
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     RESERVATION MODAL
+===================================================== -->
+
+<div
+  id="reservationModal"
+  class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+>
+
+  <div
+    class="glass-card bg-slate-900 w-full max-w-md rounded-2xl p-6 border border-violet-700 max-h-[90vh] overflow-y-auto modal-scroll"
+  >
+
+    <div class="flex justify-between items-center mb-5">
+
+      <div>
+
+        <h3 class="text-xl font-bold text-violet-400">
+          📋 จอง
+        </h3>
+
+        <p class="text-xs text-slate-400 mt-1">
+          จองแล้วจะขึ้นสถานะ รออนุมัติ
+        </p>
+
+      </div>
+
+      <button
+        onclick="closeReservationModal()"
+        class="text-slate-400"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <form
+      id="reservationForm"
+      onsubmit="submitReservation(event)"
+      class="space-y-4"
+    >
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          ชื่อ *
+        </label>
+
+        <input
+          id="reservationName"
+          type="text"
+          required
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-2">
+          โหมด Endgame
+        </label>
+
+        <div class="grid grid-cols-2 gap-2">
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="เรือ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              เรือ
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="หอ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              หอ
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="เมทริกซ์"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              เมทริกซ์
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="โฮโล"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              โฮโล
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="ไกด์ไอดี"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              ไกด์ไอดี
+            </span>
+          </label>
+
+
+          <label class="checkbox-tag">
+            <input
+              type="checkbox"
+              name="reservationEndgame"
+              value="อื่นๆ"
+              class="hidden"
+            >
+            <span class="block text-center border border-slate-700 rounded-lg p-3 cursor-pointer">
+              อื่นๆ
+            </span>
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          Discord
+        </label>
+
+        <input
+          id="reservationDiscord"
+          type="text"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          หมายเหตุ
+        </label>
+
+        <textarea
+          id="reservationNote"
+          rows="3"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        ></textarea>
+
+      </div>
+
+
+      <button
+        id="reservationSubmitButton"
+        type="submit"
+        class="w-full bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 rounded-xl"
+      >
+        ยืนยันการจอง
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ADMIN LOGIN
+===================================================== -->
+
+<div
+  id="adminLoginModal"
+  class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4"
+>
+
+  <div
+    class="glass-card bg-slate-900 w-full max-w-sm rounded-2xl p-6 border border-slate-700"
+  >
+
+    <div class="flex justify-between items-center mb-5">
+
+      <h3 class="font-bold text-amber-400 text-xl">
+        ⚙️ Admin
+      </h3>
+
+      <button
+        onclick="closeAdminLogin()"
+        class="text-slate-400"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="space-y-4">
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          Admin ID
+        </label>
+
+        <input
+          id="adminId"
+          type="text"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label class="block text-sm mb-1">
+          Password
+        </label>
+
+        <input
+          id="adminPassword"
+          type="password"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3"
+        >
+
+      </div>
+
+
+      <button
+        onclick="adminLogin()"
+        class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl"
+      >
+        เข้าสู่ระบบ
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ADMIN PANEL
+===================================================== -->
+
+<div
+  id="adminPanel"
+  class="fixed inset-0 bg-black/95 z-[70] hidden overflow-y-auto"
+>
+
+  <div class="max-w-6xl mx-auto p-4 md:p-8">
+
+
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+
+
+      <div>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-amber-400">
+          ⚙️ Admin Panel
+        </h2>
+
+        <p class="text-sm text-slate-400">
+          จัดการคิวหลักและคิวจอง
+        </p>
+
+      </div>
+
+
+      <div class="flex gap-2">
+
+
+        <button
+          onclick="loadAdminData()"
+          class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg"
+        >
+          🔄 รีเฟรช
+        </button>
+
+
+        <button
+          onclick="closeAdminPanel()"
+          class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg"
+        >
+          ปิด
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===============================================
+         RESERVATIONS ADMIN
+    =============================================== -->
+
+    <div class="glass-card rounded-2xl p-5 mb-6">
+
+
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+
+
+        <div>
+
+          <h3 class="text-xl font-bold text-violet-400">
+            📋 คิวจอง
+          </h3>
+
+          <p class="text-xs text-slate-500 mt-1">
+            Admin ใส่เงิน อนุมัติ และนำเข้าคิวหลักได้จากตรงนี้
+          </p>
+
+        </div>
+
+
+        <button
+          onclick="moveAllApprovedReservations()"
+          class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg text-sm font-bold"
+        >
+          📥 นำคิวที่อนุมัติทั้งหมดเข้าคิวหลัก
+        </button>
+
+      </div>
+
+
+      <div
+        id="adminReservations"
+      ></div>
+
+    </div>
+
+
+    <!-- ===============================================
+         MAIN QUEUES ADMIN
+    =============================================== -->
+
+    <div class="glass-card rounded-2xl p-5">
+
+
+      <h3 class="text-xl font-bold text-amber-400 mb-4">
+        🎮 คิวหลัก
+      </h3>
+
+
+      <div id="adminQueues"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let queues = [];
+let reservations = [];
+
+let storeStatus = 'เปิด';
+
+let currentTab = 'คิว';
+
+let adminLoggedIn = false;
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+window.onload = function() {
+
+  setActiveTab();
+
+  fetchData();
+
+};
+
+
+/* =====================================================
+   FETCH DATA
+===================================================== */
+
+function fetchData() {
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      queues =
+        Array.isArray(data.queues)
+          ? data.queues
+          : [];
+
+
+      reservations =
+        Array.isArray(data.reservations)
+          ? data.reservations
+          : [];
+
+
+      storeStatus =
+        data.storeStatus || 'เปิด';
+
+
+      applyStoreStatus();
+
+      render();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      showError(
+        'โหลดข้อมูลไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .getData();
+
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+function showError(message) {
+
+  const el =
+    document.getElementById('errorBanner');
+
+  el.textContent = message;
+
+  el.classList.remove('hidden');
+
+}
+
+
+/* =====================================================
+   STORE
+===================================================== */
+
+function applyStoreStatus() {
+
+  const banner =
+    document.getElementById('closedBanner');
+
+  const btn =
+    document.getElementById('btnOpenModal');
+
+
+  if (storeStatus === 'ปิด') {
+
+    banner.classList.remove('hidden');
+
+    btn.disabled = true;
+
+    btn.classList.add(
+      'opacity-40',
+      'cursor-not-allowed'
+    );
+
+  } else {
+
+    banner.classList.add('hidden');
+
+    btn.disabled = false;
+
+    btn.classList.remove(
+      'opacity-40',
+      'cursor-not-allowed'
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+function switchTab(tab) {
+
+  currentTab = tab;
+
+  setActiveTab();
+
+  render();
+
+}
+
+
+function setActiveTab() {
+
+  const active =
+    'py-3 px-5 font-semibold text-sm border-b-2 border-amber-400 text-amber-400 whitespace-nowrap';
+
+  const inactive =
+    'py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-400 whitespace-nowrap';
+
+
+  document.getElementById('tabQueue').className =
+    currentTab === 'คิว'
+      ? active
+      : inactive;
+
+
+  document.getElementById('tabReservation').className =
+    currentTab === 'จอง'
+      ? active
+      : inactive;
+
+
+  document.getElementById('tabDone').className =
+    currentTab === 'เล่นแล้ว'
+      ? active
+      : inactive;
+
+
+  document.getElementById('tabFailed').className =
+    currentTab === 'บิด'
+      ? active
+      : inactive;
+
+}
+
+
+/* =====================================================
+   MAIN RENDER
+===================================================== */
+
+function render() {
+
+  if (currentTab === 'จอง') {
+
+    renderPublicReservations();
+
+    return;
+
+  }
+
+
+  renderPlaying();
+
+
+  let filtered = [];
+
+
+  if (currentTab === 'คิว') {
+
+    filtered =
+      queues.filter(function(q) {
+
+        return (
+          q.status === 'รอเล่น' ||
+          q.status === 'กำลังเล่น'
+        );
+
+      });
+
+
+    /*
+      เงินมากขึ้นก่อน
+      เงินเท่ากันเอาคิวที่มาก่อนขึ้นก่อน
+    */
+
+    filtered.sort(function(a, b) {
+
+      const moneyDiff =
+        Number(b.donateAmount || 0) -
+        Number(a.donateAmount || 0);
+
+      if (moneyDiff !== 0) {
+        return moneyDiff;
+      }
+
+      return String(a.queueId)
+        .localeCompare(
+          String(b.queueId),
+          undefined,
+          { numeric: true }
+        );
+
+    });
+
+  }
+
+  else {
+
+    filtered =
+      queues.filter(function(q) {
+
+        return q.status === currentTab;
+
+      });
+
+  }
+
+
+  renderQueueGrid(filtered);
+
+}
+
+
+/* =====================================================
+   PLAYING
+===================================================== */
+
+function renderPlaying() {
+
+  const playing =
+    queues.find(function(q) {
+
+      return q.status === 'กำลังเล่น';
+
+    });
+
+
+  const banner =
+    document.getElementById('playingBanner');
+
+
+  if (!playing) {
+
+    banner.classList.add('hidden');
+
+    return;
+
+  }
+
+
+  banner.classList.remove('hidden');
+
+
+  document.getElementById(
+    'playingContent'
+  ).innerHTML = `
+
+    <span class="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500/30">
+      ${escapeHtml(playing.queueId)}
+    </span>
+
+    <span>
+      👤 ${escapeHtml(playing.customerName)}
+    </span>
+
+    <span class="text-xs text-slate-400">
+      🎮 ${escapeHtml(playing.endgame)}
+    </span>
+
+  `;
+
+}
+
+
+/* =====================================================
+   QUEUE GRID
+===================================================== */
+
+function renderQueueGrid(items) {
+
+  const grid =
+    document.getElementById('queueGrid');
+
+
+  if (!items.length) {
+
+    grid.innerHTML = `
+
+      <div class="col-span-full text-center text-slate-500 py-10">
+        ไม่มีคิวในหมวดนี้
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  grid.innerHTML =
+    items
+      .map(renderQueueCard)
+      .join('');
+
+}
+
+
+/* =====================================================
+   QUEUE CARD
+===================================================== */
+
+function renderQueueCard(q) {
+
+  const money =
+    Number(q.donateAmount || 0);
+
+
+  const moneyHtml =
+
+    money > 0
+
+      ? `
+        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold px-2 py-1 rounded">
+          ฿${money}
+        </span>
+      `
+
+      : `
+        <span class="bg-slate-800 text-slate-400 text-xs px-2 py-1 rounded">
+          ฟรี
+        </span>
+      `;
+
+
+  const discordHtml =
+    q.contactInfo
+
+      ? `
+        <div>
+          <span class="text-slate-500">
+            Discord:
+          </span>
+          ${escapeHtml(q.contactInfo)}
+        </div>
+      `
+
+      : '';
+
+
+  const noteHtml =
+    q.note
+
+      ? `
+        <div>
+          <span class="text-slate-500">
+            หมายเหตุ:
+          </span>
+          ${escapeHtml(q.note)}
+        </div>
+      `
+
+      : '';
+
+
+  const adminComment =
+    q.adminComment
+
+      ? `
+        <div class="mt-2 bg-rose-950/40 border border-rose-800/50 text-rose-300 p-2 rounded text-xs">
+          <b>ข้อความจากร้าน:</b>
+          ${escapeHtml(q.adminComment)}
+        </div>
+      `
+
+      : '';
+
+
+  return `
+
+    <div class="glass-card p-4 rounded-xl border border-slate-800">
+
+      <div class="flex justify-between items-center mb-2">
+
+        <span class="font-mono text-xs text-slate-400">
+          ${escapeHtml(q.queueId)}
+        </span>
+
+        ${moneyHtml}
+
+      </div>
+
+
+      <h4 class="font-bold text-white mb-2">
+        👤 ${escapeHtml(q.customerName)}
+      </h4>
+
+
+      <div class="text-xs text-slate-300 bg-slate-950 p-3 rounded-lg space-y-1">
+
+        <div>
+
+          <span class="text-slate-500">
+            โหมด:
+          </span>
+
+          <span class="text-amber-300 font-medium">
+            ${escapeHtml(q.endgame)}
+          </span>
+
+        </div>
+
+
+        ${discordHtml}
+
+
+        ${noteHtml}
+
+      </div>
+
+
+      ${adminComment}
+
+
+      <div class="text-[10px] text-slate-500 mt-3">
+
+        เวลาต่อคิว:
+        ${escapeHtml(q.timestamp)}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   PUBLIC RESERVATIONS
+===================================================== */
+
+function renderPublicReservations() {
+
+  const grid =
+    document.getElementById('queueGrid');
+
+
+  if (!reservations.length) {
+
+    grid.innerHTML = `
+
+      <div class="col-span-full text-center text-slate-500 py-10">
+        ยังไม่มีรายการจอง
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  grid.innerHTML =
+    reservations
+      .map(renderPublicReservationCard)
+      .join('');
+
+}
+
+
+/* =====================================================
+   PUBLIC RESERVATION CARD
+===================================================== */
+
+function renderPublicReservationCard(r) {
+
+  let statusText = '';
+  let statusClass = '';
+
+
+  if (r.status === 'รออนุมัติ') {
+
+    statusText =
+      '☑ รออนุมัติ';
+
+    statusClass =
+      'bg-amber-500/10 text-amber-300 border-amber-500/30';
+
+  }
+
+  else if (r.status === 'อนุมัติ') {
+
+    statusText =
+      '✅ อนุมัติแล้ว';
+
+    statusClass =
+      'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+
+  }
+
+  else if (r.status === 'ปฏิเสธ') {
+
+    statusText =
+      '❌ ปฏิเสธ';
+
+    statusClass =
+      'bg-rose-500/10 text-rose-300 border-rose-500/30';
+
+  }
+
+  else {
+
+    statusText =
+      '📥 เข้าคิวหลักแล้ว';
+
+    statusClass =
+      'bg-cyan-500/10 text-cyan-300 border-cyan-500/30';
+
+  }
+
+
+  if (r.moveToQueue === 'นำเข้าคิวแล้ว') {
+
+    statusText =
+      '📥 เข้าคิวหลักแล้ว';
+
+    statusClass =
+      'bg-cyan-500/10 text-cyan-300 border-cyan-500/30';
+
+  }
+
+
+  return `
+
+    <div class="glass-card p-4 rounded-xl border border-slate-800">
+
+      <div class="flex justify-between items-center gap-2 mb-3">
+
+        <span class="font-mono text-xs text-violet-400">
+          ${escapeHtml(r.reservationId)}
+        </span>
+
+        <span
+          class="text-xs px-2 py-1 rounded border ${statusClass}"
+        >
+          ${statusText}
+        </span>
+
+      </div>
+
+
+      <h4 class="font-bold text-white mb-2">
+        👤 ${escapeHtml(r.customerName)}
+      </h4>
+
+
+      <div class="text-xs text-slate-300 bg-slate-950 p-3 rounded-lg space-y-1">
+
+        <div>
+
+          <span class="text-slate-500">
+            โหมด:
+          </span>
+
+          <span class="text-violet-300">
+            ${escapeHtml(r.endgame)}
+          </span>
+
+        </div>
+
+
+        ${
+          r.contactInfo
+
+            ? `
+
+              <div>
+
+                <span class="text-slate-500">
+                  Discord:
+                </span>
+
+                ${escapeHtml(r.contactInfo)}
+
+              </div>
+
+            `
+
+            : ''
+        }
+
+
+        ${
+          r.note
+
+            ? `
+
+              <div>
+
+                <span class="text-slate-500">
+                  หมายเหตุ:
+                </span>
+
+                ${escapeHtml(r.note)}
+
+              </div>
+
+            `
+
+            : ''
+        }
+
+      </div>
+
+
+      <div class="text-[10px] text-slate-500 mt-3">
+
+        เวลาจอง:
+        ${escapeHtml(r.timestamp)}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   NORMAL QUEUE MODAL
+===================================================== */
+
+function openQueueModal() {
+
+  if (storeStatus === 'ปิด') {
+    return;
+  }
+
+
+  document
+    .getElementById('queueModal')
+    .classList.remove('hidden');
+
+}
+
+
+function closeQueueModal() {
+
+  document
+    .getElementById('queueModal')
+    .classList.add('hidden');
+
+}
+
+
+/* =====================================================
+   SUBMIT QUEUE
+===================================================== */
+
+function submitQueue(e) {
+
+  e.preventDefault();
+
+
+  const button =
+    document.getElementById(
+      'queueSubmitButton'
+    );
+
+
+  const endgames =
+    Array.from(
+      document.querySelectorAll(
+        'input[name="queueEndgame"]:checked'
+      )
+    )
+    .map(el => el.value);
+
+
+  if (!endgames.length) {
+
+    alert(
+      'กรุณาเลือกโหมด Endgame อย่างน้อย 1 อัน'
+    );
+
+    return;
+
+  }
+
+
+  button.disabled = true;
+  button.innerText = 'กำลังส่ง...';
+
+
+  const payload = {
+
+    customerName:
+      document.getElementById(
+        'queueName'
+      ).value.trim(),
+
+    endgame:
+      endgames,
+
+    contactInfo:
+      document.getElementById(
+        'queueDiscord'
+      ).value.trim(),
+
+    note:
+      document.getElementById(
+        'queueNote'
+      ).value.trim()
+
+  };
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      button.disabled = false;
+
+      button.innerText =
+        'ยืนยันลงคิว';
+
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'ลงคิวสำเร็จ!\n\n' +
+        'เลขคิว: ' +
+        data.queueId
+      );
+
+
+      document
+        .getElementById('queueForm')
+        .reset();
+
+
+      closeQueueModal();
+
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      button.disabled = false;
+
+      button.innerText =
+        'ยืนยันลงคิว';
+
+
+      alert(
+        'เกิดข้อผิดพลาด: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .submitQueueData(payload);
+
+}
+
+
+/* =====================================================
+   RESERVATION MODAL
+===================================================== */
+
+function openReservationModal() {
+
+  document
+    .getElementById('reservationModal')
+    .classList.remove('hidden');
+
+}
+
+
+function closeReservationModal() {
+
+  document
+    .getElementById('reservationModal')
+    .classList.add('hidden');
+
+}
+
+
+/* =====================================================
+   SUBMIT RESERVATION
+===================================================== */
+
+function submitReservation(e) {
+
+  e.preventDefault();
+
+
+  const button =
+    document.getElementById(
+      'reservationSubmitButton'
+    );
+
+
+  const endgames =
+    Array.from(
+      document.querySelectorAll(
+        'input[name="reservationEndgame"]:checked'
+      )
+    )
+    .map(el => el.value);
+
+
+  if (!endgames.length) {
+
+    alert(
+      'กรุณาเลือกโหมด Endgame อย่างน้อย 1 อัน'
+    );
+
+    return;
+
+  }
+
+
+  button.disabled = true;
+
+  button.innerText =
+    'กำลังส่งการจอง...';
+
+
+  const payload = {
+
+    customerName:
+      document.getElementById(
+        'reservationName'
+      ).value.trim(),
+
+    endgame:
+      endgames,
+
+    contactInfo:
+      document.getElementById(
+        'reservationDiscord'
+      ).value.trim(),
+
+    note:
+      document.getElementById(
+        'reservationNote'
+      ).value.trim()
+
+  };
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      button.disabled = false;
+
+      button.innerText =
+        'ยืนยันการจอง';
+
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'จองสำเร็จ!\n\n' +
+        'เลขจอง: ' +
+        data.reservationId +
+        '\n\n' +
+        'สถานะ: ☑ รออนุมัติ'
+      );
+
+
+      document
+        .getElementById('reservationForm')
+        .reset();
+
+
+      closeReservationModal();
+
+      fetchData();
+
+      switchTab('จอง');
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      button.disabled = false;
+
+      button.innerText =
+        'ยืนยันการจอง';
+
+
+      alert(
+        'เกิดข้อผิดพลาด: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .submitReservation(payload);
+
+}
+
+
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
+
+function openAdminLogin() {
+
+  document
+    .getElementById('adminLoginModal')
+    .classList.remove('hidden');
+
+}
+
+
+function closeAdminLogin() {
+
+  document
+    .getElementById('adminLoginModal')
+    .classList.add('hidden');
+
+}
+
+
+function adminLogin() {
+
+  const user =
+    document.getElementById(
+      'adminId'
+    ).value.trim();
+
+
+  const pass =
+    document.getElementById(
+      'adminPassword'
+    ).value;
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      adminLoggedIn = true;
+
+
+      closeAdminLogin();
+
+
+      document
+        .getElementById('adminPanel')
+        .classList.remove('hidden');
+
+
+      loadAdminData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        err && err.message
+          ? err.message
+          : err
+      );
+
+    })
+
+    .adminLogin(
+      user,
+      pass
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE ADMIN
+===================================================== */
+
+function closeAdminPanel() {
+
+  adminLoggedIn = false;
+
+  document
+    .getElementById('adminPanel')
+    .classList.add('hidden');
+
+}
+
+
+/* =====================================================
+   LOAD ADMIN DATA
+===================================================== */
+
+function loadAdminData() {
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      queues =
+        Array.isArray(data.queues)
+          ? data.queues
+          : [];
+
+
+      reservations =
+        Array.isArray(data.reservations)
+          ? data.reservations
+          : [];
+
+
+      renderAdminReservations();
+
+      renderAdminQueues();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'โหลดข้อมูล Admin ไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .getData();
+
+}
+
+
+/* =====================================================
+   ADMIN RESERVATIONS
+===================================================== */
+
+function renderAdminReservations() {
+
+  const container =
+    document.getElementById(
+      'adminReservations'
+    );
+
+
+  if (!reservations.length) {
+
+    container.innerHTML = `
+
+      <div class="text-center text-slate-500 py-8">
+        ยังไม่มีคิวจอง
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    reservations
+      .map(renderAdminReservation)
+      .join('');
+
+}
+
+
+/* =====================================================
+   ADMIN RESERVATION CARD
+===================================================== */
+
+function renderAdminReservation(r) {
+
+  let statusText = '';
+  let statusClass = '';
+
+
+  if (r.status === 'รออนุมัติ') {
+
+    statusText = '☑ รออนุมัติ';
+
+    statusClass =
+      'bg-amber-500/10 text-amber-300 border-amber-500/30';
+
+  }
+
+  else if (r.status === 'อนุมัติ') {
+
+    statusText = '✅ อนุมัติแล้ว';
+
+    statusClass =
+      'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+
+  }
+
+  else {
+
+    statusText = '❌ ปฏิเสธ';
+
+    statusClass =
+      'bg-rose-500/10 text-rose-300 border-rose-500/30';
+
+  }
+
+
+  const id =
+    safeId(r.reservationId);
+
+
+  let actionButtons = '';
+
+
+  if (r.status === 'รออนุมัติ') {
+
+    actionButtons += `
+
+      <button
+        onclick="approveReservation('${escapeJs(r.reservationId)}')"
+        class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg text-sm font-bold"
+      >
+        ✅ อนุมัติ
+      </button>
+
+
+      <button
+        onclick="rejectReservation('${escapeJs(r.reservationId)}')"
+        class="bg-rose-600 hover:bg-rose-700 px-4 py-2 rounded-lg text-sm font-bold"
+      >
+        ❌ ปฏิเสธ
+      </button>
+
+    `;
+
+  }
+
+
+  if (
+    r.status === 'อนุมัติ' &&
+    r.moveToQueue !== 'นำเข้าคิวแล้ว'
+  ) {
+
+    actionButtons += `
+
+      <button
+        onclick="moveOneReservation('${escapeJs(r.reservationId)}')"
+        class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg text-sm font-bold"
+      >
+        📥 นำเข้าคิวหลัก
+      </button>
+
+    `;
+
+  }
+
+
+  const movedText =
+    r.moveToQueue === 'นำเข้าคิวแล้ว'
+
+      ? `
+        <span class="bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-1 rounded-full text-xs font-bold">
+          📥 เข้าคิวหลักแล้ว
+        </span>
+      `
+
+      : '';
+
+
+  return `
+
+    <div
+      class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-4"
+    >
+
+
+      <div class="flex flex-wrap justify-between gap-3 mb-4">
+
+
+        <div>
+
+          <div class="font-mono text-violet-400 font-bold">
+            ${escapeHtml(r.reservationId)}
+          </div>
+
+          <div class="text-white font-bold text-lg">
+            👤 ${escapeHtml(r.customerName)}
+          </div>
+
+        </div>
+
+
+        <div class="flex gap-2 flex-wrap">
+
+          <span
+            class="px-3 py-1 rounded-full text-xs font-bold border ${statusClass}"
+          >
+            ${statusText}
+          </span>
+
+          ${movedText}
+
+        </div>
+
+      </div>
+
+
+      <div class="grid md:grid-cols-2 gap-3">
+
+
+        <!-- ชื่อ -->
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            ชื่อ
+          </label>
+
+          <input
+            id="res_name_${id}"
+            value="${escapeHtml(r.customerName)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <!-- เงิน -->
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            จำนวนเงิน
+          </label>
+
+          <input
+            id="res_money_${id}"
+            type="number"
+            min="0"
+            value="${Number(r.donateAmount || 0)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <!-- Endgame -->
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            Endgame
+          </label>
+
+          <input
+            id="res_endgame_${id}"
+            value="${escapeHtml(r.endgame)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <!-- Discord -->
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            Discord
+          </label>
+
+          <input
+            id="res_discord_${id}"
+            value="${escapeHtml(r.contactInfo)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <!-- สถานะ -->
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            สถานะ
+          </label>
+
+          <div
+            class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-300"
+          >
+            ${statusText}
+          </div>
+
+        </div>
+
+
+        <!-- Note -->
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            หมายเหตุ
+          </label>
+
+          <textarea
+            id="res_note_${id}"
+            rows="2"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >${escapeHtml(r.note)}</textarea>
+
+        </div>
+
+
+        <!-- Admin Comment -->
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            ข้อความจากร้าน
+          </label>
+
+          <textarea
+            id="res_comment_${id}"
+            rows="2"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >${escapeHtml(r.adminComment)}</textarea>
+
+        </div>
+
+      </div>
+
+
+      <!-- SAVE -->
+
+      <button
+        onclick="saveReservation('${escapeJs(r.reservationId)}')"
+        class="w-full mt-3 bg-slate-700 hover:bg-slate-600 py-2.5 rounded-lg font-bold text-sm"
+      >
+        💾 บันทึกข้อมูลจอง
+      </button>
+
+
+      <!-- ACTIONS -->
+
+      <div class="flex flex-wrap gap-2 mt-3">
+
+        ${actionButtons}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   SAVE RESERVATION
+===================================================== */
+
+function saveReservation(reservationId) {
+
+  const id =
+    safeId(reservationId);
+
+
+  const payload = {
+
+    reservationId: reservationId,
+
+    customerName:
+      document.getElementById(
+        'res_name_' + id
+      ).value.trim(),
+
+    endgame:
+      document.getElementById(
+        'res_endgame_' + id
+      ).value.trim(),
+
+    donateAmount:
+      document.getElementById(
+        'res_money_' + id
+      ).value,
+
+    contactInfo:
+      document.getElementById(
+        'res_discord_' + id
+      ).value.trim(),
+
+    note:
+      document.getElementById(
+        'res_note_' + id
+      ).value.trim(),
+
+    adminComment:
+      document.getElementById(
+        'res_comment_' + id
+      ).value.trim()
+
+  };
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'บันทึกข้อมูลจองแล้ว'
+      );
+
+
+      loadAdminData();
+
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'บันทึกไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .updateReservationAdmin(payload);
+
+}
+
+
+/* =====================================================
+   APPROVE RESERVATION
+===================================================== */
+
+function approveReservation(reservationId) {
+
+  if (!confirm(
+    'อนุมัติการจอง ' +
+    reservationId +
+    ' ใช่หรือไม่?'
+  )) {
+
+    return;
+
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'อนุมัติไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .approveReservation(reservationId);
+
+}
+
+
+/* =====================================================
+   REJECT
+===================================================== */
+
+function rejectReservation(reservationId) {
+
+  const comment =
+    prompt(
+      'เหตุผลที่ปฏิเสธ (ไม่ใส่ก็ได้)'
+    );
+
+
+  if (comment === null) {
+    return;
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'ปฏิเสธไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .rejectReservation(
+      reservationId,
+      comment
+    );
+
+}
+
+
+/* =====================================================
+   MOVE ONE
+===================================================== */
+
+function moveOneReservation(reservationId) {
+
+  if (!confirm(
+    'นำ ' +
+    reservationId +
+    ' เข้าคิวหลักใช่หรือไม่?'
+  )) {
+
+    return;
+
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'นำเข้าคิวหลักแล้ว\n\n' +
+        'เลขคิว: ' +
+        data.queueId
+      );
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'นำเข้าไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .moveReservationToQueue(
+      reservationId
+    );
+
+}
+
+
+/* =====================================================
+   MOVE ALL
+===================================================== */
+
+function moveAllApprovedReservations() {
+
+  const approved =
+    reservations.filter(function(r) {
+
+      return (
+        r.status === 'อนุมัติ' &&
+        r.moveToQueue !== 'นำเข้าคิวแล้ว'
+      );
+
+    });
+
+
+  if (!approved.length) {
+
+    alert(
+      'ไม่มีคิวจองที่อนุมัติแล้วและรอนำเข้าคิว'
+    );
+
+    return;
+
+  }
+
+
+  if (!confirm(
+    'มี ' +
+    approved.length +
+    ' รายการที่จะนำเข้าคิวหลัก\n\n' +
+    'ยืนยันหรือไม่?'
+  )) {
+
+    return;
+
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'นำเข้าคิวหลักสำเร็จ ' +
+        data.movedCount +
+        ' รายการ'
+      );
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'นำเข้าไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .moveAllApprovedReservations();
+
+}
+
+
+/* =====================================================
+   ADMIN QUEUES
+===================================================== */
+
+function renderAdminQueues() {
+
+  const container =
+    document.getElementById(
+      'adminQueues'
+    );
+
+
+  if (!queues.length) {
+
+    container.innerHTML = `
+
+      <div class="text-center text-slate-500 py-8">
+        ยังไม่มีคิวหลัก
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    queues
+      .map(renderAdminQueue)
+      .join('');
+
+}
+
+
+/* =====================================================
+   ADMIN QUEUE CARD
+===================================================== */
+
+function renderAdminQueue(q) {
+
+  const id =
+    safeId(q.queueId);
+
+
+  return `
+
+    <div
+      class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-4"
+    >
+
+
+      <div class="flex justify-between items-center mb-4">
+
+        <div class="font-mono text-amber-400 font-bold">
+          ${escapeHtml(q.queueId)}
+        </div>
+
+        <div class="text-xs text-slate-500">
+          ${escapeHtml(q.timestamp)}
+        </div>
+
+      </div>
+
+
+      <div class="grid md:grid-cols-2 gap-3">
+
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            ชื่อ
+          </label>
+
+          <input
+            id="q_name_${id}"
+            value="${escapeHtml(q.customerName)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            จำนวนเงิน
+          </label>
+
+          <input
+            id="q_money_${id}"
+            type="number"
+            min="0"
+            value="${Number(q.donateAmount || 0)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            Endgame
+          </label>
+
+          <input
+            id="q_endgame_${id}"
+            value="${escapeHtml(q.endgame)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            Discord
+          </label>
+
+          <input
+            id="q_discord_${id}"
+            value="${escapeHtml(q.contactInfo)}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label class="text-xs text-slate-500 block mb-1">
+            สถานะคิว
+          </label>
+
+          <select
+            id="q_status_${id}"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >
+
+            <option value="รอเล่น"
+              ${q.status === 'รอเล่น' ? 'selected' : ''}>
+              รอเล่น
+            </option>
+
+            <option value="กำลังเล่น"
+              ${q.status === 'กำลังเล่น' ? 'selected' : ''}>
+              กำลังเล่น
+            </option>
+
+            <option value="เล่นแล้ว"
+              ${q.status === 'เล่นแล้ว' ? 'selected' : ''}>
+              เล่นแล้ว
+            </option>
+
+            <option value="บิด"
+              ${q.status === 'บิด' ? 'selected' : ''}>
+              บิด
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            หมายเหตุ
+          </label>
+
+          <textarea
+            id="q_note_${id}"
+            rows="2"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >${escapeHtml(q.note)}</textarea>
+
+        </div>
+
+
+        <div class="md:col-span-2">
+
+          <label class="text-xs text-slate-500 block mb-1">
+            ข้อความจากร้าน
+          </label>
+
+          <textarea
+            id="q_comment_${id}"
+            rows="2"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"
+          >${escapeHtml(q.adminComment)}</textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="grid md:grid-cols-2 gap-2 mt-4">
+
+
+        <button
+          onclick="saveQueue('${escapeJs(q.queueId)}')"
+          class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-lg"
+        >
+          💾 บันทึก
+        </button>
+
+
+        <button
+          onclick="deleteQueue('${escapeJs(q.queueId)}')"
+          class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg"
+        >
+          🗑️ ลบคิว
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   SAVE QUEUE
+===================================================== */
+
+function saveQueue(queueId) {
+
+  const id =
+    safeId(queueId);
+
+
+  const payload = {
+
+    queueId: queueId,
+
+    customerName:
+      document.getElementById(
+        'q_name_' + id
+      ).value.trim(),
+
+    donateAmount:
+      document.getElementById(
+        'q_money_' + id
+      ).value,
+
+    endgame:
+      document.getElementById(
+        'q_endgame_' + id
+      ).value.trim(),
+
+    contactInfo:
+      document.getElementById(
+        'q_discord_' + id
+      ).value.trim(),
+
+    status:
+      document.getElementById(
+        'q_status_' + id
+      ).value,
+
+    note:
+      document.getElementById(
+        'q_note_' + id
+      ).value.trim(),
+
+    adminComment:
+      document.getElementById(
+        'q_comment_' + id
+      ).value.trim()
+
+  };
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      alert(
+        'บันทึกคิวเรียบร้อยแล้ว'
+      );
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'บันทึกไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .updateQueueAdmin(payload);
+
+}
+
+
+/* =====================================================
+   DELETE QUEUE
+===================================================== */
+
+function deleteQueue(queueId) {
+
+  if (!confirm(
+    'ยืนยันลบคิว ' +
+    queueId +
+    ' ?'
+  )) {
+
+    return;
+
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      if (!data.success) {
+
+        alert(data.error);
+
+        return;
+
+      }
+
+
+      loadAdminData();
+      fetchData();
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        'ลบไม่สำเร็จ: ' +
+        (
+          err && err.message
+            ? err.message
+            : err
+        )
+      );
+
+    })
+
+    .deleteQueueAdmin(queueId);
+
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function safeId(value) {
+
+  return String(value || '')
+    .replace(/[^a-zA-Z0-9_-]/g, '_');
+
+}
+
+
+function escapeHtml(value) {
+
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+}
+
+
+function escapeJs(value) {
+
+  return String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+
+}
+
+</script>
+
+
+</body>
+</html>
