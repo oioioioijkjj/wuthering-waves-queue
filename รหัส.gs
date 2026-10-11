@@ -1,28 +1,15 @@
-/**
- * =========================================================
- * CONFIG
- * =========================================================
- */
-
+/* ตั้งค่าระบบ */
 const SHEET_ID = 'YOUR_SPREADSHEET_ID(เอาไว้ใส่idsheetจริง)';
 
 const QUEUES_SHEET = 'Queues';
 const RESERVATIONS_SHEET = 'Reservations';
 const SETTINGS_SHEET = 'Settings';
 
-/**
- * ADMIN
- */
+/* แอดมิน */
 const ADMIN_ID = 'XXXXX';
 const ADMIN_PASSWORD = 'XXXXX';
 
-
-/**
- * =========================================================
- * WEB APP
- * =========================================================
- */
-
+/* เว็บแอป */
 function doGet() {
   return HtmlService
     .createHtmlOutputFromFile('index')
@@ -30,13 +17,7 @@ function doGet() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-
-/**
- * =========================================================
- * SHEET MENU
- * =========================================================
- */
-
+/* เมนูในชีต */
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('⚙️ จัดการระบบคิว')
@@ -49,17 +30,10 @@ function onOpen() {
     .addToUi();
 }
 
-
-/**
- * =========================================================
- * SHEET HELPERS
- * =========================================================
- */
-
+/* เรียกใช้ชีต */
 function getSpreadsheet_() {
   return SpreadsheetApp.openById(SHEET_ID);
 }
-
 
 function getQueueSheet_() {
   const sheet = getSpreadsheet_().getSheetByName(QUEUES_SHEET);
@@ -71,7 +45,6 @@ function getQueueSheet_() {
   return sheet;
 }
 
-
 function getReservationSheet_() {
   const sheet = getSpreadsheet_().getSheetByName(RESERVATIONS_SHEET);
 
@@ -81,7 +54,6 @@ function getReservationSheet_() {
 
   return sheet;
 }
-
 
 function getSettingsSheet_() {
   const ss = getSpreadsheet_();
@@ -98,13 +70,7 @@ function getSettingsSheet_() {
   return sheet;
 }
 
-
-/**
- * =========================================================
- * STORE STATUS
- * =========================================================
- */
-
+/* สถานะร้าน */
 function getStoreStatus() {
   try {
     const val = String(
@@ -118,23 +84,15 @@ function getStoreStatus() {
   }
 }
 
-
 function openStore() {
   getSettingsSheet_().getRange('B1').setValue('เปิด');
 }
-
 
 function closeStore() {
   getSettingsSheet_().getRange('B1').setValue('ปิด');
 }
 
-
-/**
- * =========================================================
- * PUBLIC DATA
- * =========================================================
- */
-
+/* ข้อมูลหน้าเว็บ */
 function getData() {
   return {
     queues: getQueues(),
@@ -143,24 +101,7 @@ function getData() {
   };
 }
 
-
-/**
- * =========================================================
- * QUEUES
- *
- * A QueueID
- * B Timestamp
- * C CustomerName
- * D Endgame
- * E DonateAmount
- * F SlipUrl
- * G Note
- * H Status
- * I AdminComment
- * J ContactInfo
- * =========================================================
- */
-
+/* อ่านคิวหลัก */
 function getQueues() {
   const sheet = getQueueSheet_();
   const data = sheet.getDataRange().getValues();
@@ -188,26 +129,7 @@ function getQueues() {
     }));
 }
 
-
-/**
- * =========================================================
- * RESERVATIONS
- *
- * A ReservationID
- * B Timestamp
- * C CustomerName
- * D Endgame
- * E DonateAmount
- * F SlipUrl
- * G Note
- * H Status
- * I AdminComment
- * J ContactInfo
- * K ApprovedAt
- * L MoveToQueue
- * =========================================================
- */
-
+/* อ่านคิวจอง */
 function getReservations() {
   const sheet = getReservationSheet_();
   const data = sheet.getDataRange().getValues();
@@ -239,13 +161,7 @@ function getReservations() {
     }));
 }
 
-
-/**
- * =========================================================
- * NEXT ID
- * =========================================================
- */
-
+/* สร้างเลขคิว */
 function getNextQueueId_(sheet) {
   const data = sheet.getDataRange().getValues();
 
@@ -266,7 +182,6 @@ function getNextQueueId_(sheet) {
 
   return 'Q-' + String(max + 1).padStart(3, '0');
 }
-
 
 function getNextReservationId_(sheet) {
   const data = sheet.getDataRange().getValues();
@@ -289,13 +204,7 @@ function getNextReservationId_(sheet) {
   return 'R-' + String(max + 1).padStart(3, '0');
 }
 
-
-/**
- * =========================================================
- * NORMAL QUEUE
- * =========================================================
- */
-
+/* รับคิวปกติ */
 function submitQueueData(payload) {
   try {
 
@@ -353,13 +262,7 @@ function submitQueueData(payload) {
   }
 }
 
-
-/**
- * =========================================================
- * RESERVATION
- * =========================================================
- */
-
+/* รับรายการจอง */
 function submitReservation(payload) {
   try {
 
@@ -412,13 +315,7 @@ function submitReservation(payload) {
   }
 }
 
-
-/**
- * =========================================================
- * ADMIN LOGIN
- * =========================================================
- */
-
+/* ล็อกอินแอดมิน */
 function adminLogin(user, password) {
 
   if (
@@ -436,21 +333,7 @@ function adminLogin(user, password) {
   };
 }
 
-
-/**
- * =========================================================
- * UPDATE RESERVATION
- *
- * Admin แก้:
- * - ชื่อ
- * - Endgame
- * - เงิน
- * - Discord
- * - Note
- * - AdminComment
- * =========================================================
- */
-
+/* แก้ไขข้อมูลจอง */
 function updateReservationAdmin(payload) {
   try {
 
@@ -518,13 +401,7 @@ function updateReservationAdmin(payload) {
   }
 }
 
-
-/**
- * =========================================================
- * APPROVE RESERVATION
- * =========================================================
- */
-
+/* อนุมัติการจอง */
 function approveReservation(reservationId) {
   try {
 
@@ -564,13 +441,7 @@ function approveReservation(reservationId) {
   }
 }
 
-
-/**
- * =========================================================
- * REJECT RESERVATION
- * =========================================================
- */
-
+/* ปฏิเสธการจอง */
 function rejectReservation(reservationId, comment) {
   try {
 
@@ -613,13 +484,7 @@ function rejectReservation(reservationId, comment) {
   }
 }
 
-
-/**
- * =========================================================
- * MOVE ONE RESERVATION TO QUEUE
- * =========================================================
- */
-
+/* นำรายการจองเข้าคิว */
 function moveReservationToQueue(reservationId) {
   try {
 
@@ -697,13 +562,7 @@ function moveReservationToQueue(reservationId) {
   }
 }
 
-
-/**
- * =========================================================
- * MOVE ALL APPROVED RESERVATIONS
- * =========================================================
- */
-
+/* นำรายการจองที่อนุมัติทั้งหมดเข้าคิว */
 function moveAllApprovedReservations() {
   try {
 
@@ -775,13 +634,7 @@ function moveAllApprovedReservations() {
   }
 }
 
-
-/**
- * =========================================================
- * UPDATE QUEUE
- * =========================================================
- */
-
+/* แก้ไขคิวหลัก */
 function updateQueueAdmin(payload) {
   try {
 
@@ -853,13 +706,7 @@ function updateQueueAdmin(payload) {
   }
 }
 
-
-/**
- * =========================================================
- * DELETE QUEUE
- * =========================================================
- */
-
+/* ลบคิว */
 function deleteQueueAdmin(queueId) {
   try {
 
@@ -896,13 +743,7 @@ function deleteQueueAdmin(queueId) {
   }
 }
 
-
-/**
- * =========================================================
- * DROPDOWN SETUP
- * =========================================================
- */
-
+/* ตั้งค่า Drop-down */
 function setupReservationDropdowns() {
 
   const sheet = getReservationSheet_();
@@ -937,13 +778,7 @@ function setupReservationDropdowns() {
   return 'ตั้งค่า Drop-down เรียบร้อยแล้ว';
 }
 
-
-/**
- * =========================================================
- * CLEAR QUEUES
- * =========================================================
- */
-
+/* ล้างคิวทั้งหมด */
 function clearAllQueues() {
 
   const ui = SpreadsheetApp.getUi();
@@ -968,13 +803,7 @@ function clearAllQueues() {
   ui.alert('ล้างคิวทั้งหมดเรียบร้อยแล้ว');
 }
 
-
-/**
- * =========================================================
- * TEST
- * =========================================================
- */
-
+/* ทดสอบข้อมูล */
 function testGetQueues() {
   Logger.log(
     JSON.stringify(
